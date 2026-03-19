@@ -3,7 +3,6 @@
   "short_name": "風水羅盤",
   "description": "依生肖命卦、坐向五行，分析住宅宅運吉凶",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0d0500",
