@@ -1,0 +1,1770 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>風水羅盤・吉宅鑑定</title>
+
+<!-- PWA -->
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#c9a84c">
+<link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="144x144" href="icons/icon-144.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="風水羅盤">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dark: #8b6914;
+    --red: #8b1a1a;
+    --red-bright: #c0392b;
+    --ink: #1a0f00;
+    --paper: #f5edd6;
+    --paper-dark: #e8d9b0;
+    --jade: #2d6a4f;
+    --jade-light: #52b788;
+    --sky: #1e3a5f;
+    --bg: #0d0500;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'Noto Serif TC', serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Decorative background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(139,26,26,0.1) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(13,5,0,1) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    padding: 36px 30px 32px;
+    position: relative;
+    background: linear-gradient(160deg, rgba(28,16,4,0.97) 0%, rgba(18,10,2,0.99) 100%);
+    border: 1px solid rgba(201,168,76,0.45);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(201,168,76,0.2), inset 0 -1px 0 rgba(201,168,76,0.1);
+  }
+
+  /* Corner ornaments */
+  .header::before, .header::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    border-color: rgba(201,168,76,0.6);
+    border-style: solid;
+  }
+  .header::before { top: 8px; left: 8px; border-width: 1px 0 0 1px; }
+  .header::after  { bottom: 8px; right: 8px; border-width: 0 1px 1px 0; }
+
+  .header-deco {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 12px;
+  }
+
+  .header-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.7), transparent);
+    max-width: 200px;
+  }
+
+  .header h1 {
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    color: #ffe98a;
+    text-shadow: 0 0 20px rgba(201,168,76,0.6), 0 2px 4px rgba(0,0,0,0.8);
+    letter-spacing: 0.12em;
+  }
+
+  .header-sub {
+    font-size: 0.85rem;
+    color: #c8ad70;
+    letter-spacing: 0.35em;
+    margin-top: 10px;
+  }
+
+  .bagua-deco {
+    font-size: 2rem;
+    color: var(--gold);
+    opacity: 0.9;
+    text-shadow: 0 0 12px rgba(201,168,76,0.5);
+  }
+
+  /* Step indicator */
+  .steps {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin: 0 0 20px;
+    background: rgba(20,12,2,0.95);
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 4px;
+    padding: 14px 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: rgba(201,168,76,0.55);
+    letter-spacing: 0.05em;
+  }
+
+  .step.active { color: var(--gold); }
+  .step.done { color: var(--gold); }
+
+  .step-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+  }
+
+  .step-arrow {
+    color: var(--gold-dark);
+    margin: 0 8px;
+    font-size: 0.7rem;
+  }
+
+  /* Panel */
+  .panel {
+    background: linear-gradient(135deg, rgba(30,18,5,0.92) 0%, rgba(20,12,3,0.96) 100%);
+    border: 1px solid rgba(201,168,76,0.45);
+    border-radius: 4px;
+    padding: 30px;
+    margin-bottom: 20px;
+    position: relative;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(201,168,76,0.15);
+  }
+
+  .panel::before, .panel::after {
+    content: '◆';
+    position: absolute;
+    color: var(--gold);
+    font-size: 0.5rem;
+    opacity: 0.5;
+  }
+  .panel::before { top: 8px; left: 8px; }
+  .panel::after { bottom: 8px; right: 8px; }
+
+  .panel-title {
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .panel-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201,168,76,0.5), transparent);
+  }
+
+  /* Section: Zodiac */
+  .zodiac-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+  }
+
+  @media (max-width: 600px) {
+    .zodiac-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  @media (max-width: 400px) {
+    .zodiac-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .zodiac-btn {
+    background: rgba(25,15,3,0.85);
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 3px;
+    padding: 10px 5px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    color: var(--paper);
+    font-family: 'Noto Serif TC', serif;
+  }
+
+  .zodiac-btn:hover {
+    background: rgba(201,168,76,0.18);
+    border-color: rgba(201,168,76,0.7);
+  }
+
+  .zodiac-btn.selected {
+    background: rgba(201,168,76,0.28);
+    border-color: var(--gold);
+    box-shadow: 0 0 14px rgba(201,168,76,0.35);
+  }
+
+  .zodiac-icon { font-size: 1.6rem; display: block; }
+  .zodiac-name { font-size: 0.85rem; color: #f0d98a; margin-top: 4px; display: block; font-weight: 600; }
+  .zodiac-year { font-size: 0.65rem; color: var(--gold); }
+
+  /* Direction picker */
+  .compass-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+
+  .compass {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    flex-shrink: 0;
+  }
+
+  .compass-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.5);
+  }
+
+  .compass-ring:nth-child(2) {
+    inset: 15px;
+    border-color: rgba(201,168,76,0.25);
+  }
+
+  /* Needle layer — sits above rings, below buttons */
+  .compass-needle-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    transition: none;
+  }
+
+  .needle-group {
+    /* cubic-bezier(0.4, 2.08, 0.55, 0.44) 模擬真實指針回彈定位感 */
+    transition: transform 1.1s cubic-bezier(0.4, 2.08, 0.55, 0.44);
+    transform-origin: 0px 0px;
+  }
+
+  .compass-hub {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #ffe08a, var(--gold-dark));
+    box-shadow: 0 0 10px rgba(201,168,76,0.6), 0 0 3px #000;
+    z-index: 10;
+  }
+
+  .dir-btn {
+    position: absolute;
+    width: 46px; height: 46px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.5);
+    background: rgba(10,5,0,0.92);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: 1rem;
+    color: #f0d98a;
+    transition: all 0.2s;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  }
+
+  .dir-btn:hover {
+    background: rgba(201,168,76,0.22);
+    border-color: var(--gold);
+  }
+
+  .dir-btn.selected {
+    background: rgba(201,168,76,0.3);
+    border-color: var(--gold);
+    color: #fff8d0;
+    box-shadow: 0 0 18px rgba(201,168,76,0.5);
+  }
+
+  /* Direction positions */
+  .dir-btn[data-dir="北"] { top: 8%; left: 50%; }
+  .dir-btn[data-dir="東北"] { top: 18%; left: 82%; }
+  .dir-btn[data-dir="東"] { top: 50%; left: 92%; }
+  .dir-btn[data-dir="東南"] { top: 82%; left: 82%; }
+  .dir-btn[data-dir="南"] { top: 92%; left: 50%; }
+  .dir-btn[data-dir="西南"] { top: 82%; left: 18%; }
+  .dir-btn[data-dir="西"] { top: 50%; left: 8%; }
+  .dir-btn[data-dir="西北"] { top: 18%; left: 18%; }
+
+  .dir-sub-label { font-size: 0.55rem; display: block; color: var(--gold); }
+
+  .compass-legend {
+    font-size: 0.75rem;
+    color: #c8ad70;
+    line-height: 2;
+  }
+
+  .compass-legend span {
+    color: #fff8d0;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  /* Birth year */
+  .input-row {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field-label {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+  }
+
+  .field-input {
+    background: rgba(10,5,0,0.88);
+    border: 1px solid rgba(201,168,76,0.45);
+    border-radius: 2px;
+    padding: 10px 15px;
+    color: #fff8d0;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 120px;
+  }
+
+  .field-input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 8px rgba(201,168,76,0.3);
+  }
+
+  select.field-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M5 6L0 0h10z' fill='%23c9a84c'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+    width: 140px;
+  }
+
+  /* 立春提示 */
+  .lichun-notice {
+    display: none;
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: rgba(180,100,20,0.15);
+    border: 1px solid rgba(232,160,48,0.5);
+    border-left: 3px solid #e8a030;
+    border-radius: 2px;
+    font-size: 0.75rem;
+    color: #f0c060;
+    line-height: 1.7;
+    animation: fadeUp 0.3s ease;
+  }
+  .lichun-notice.warn-prev {
+    background: rgba(180,60,20,0.18);
+    border-color: rgba(220,80,60,0.5);
+    border-left-color: #e06060;
+    color: #f09080;
+  }
+  .lichun-notice .lichun-icon { font-size: 1rem; margin-right: 4px; }
+
+  /* Analyze button */
+  .btn-analyze {
+    display: block;
+    margin: 25px auto;
+    background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-dark));
+    background-size: 200% 100%;
+    border: none;
+    padding: 14px 50px;
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.3em;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    clip-path: polygon(10px 0%, calc(100% - 10px) 0%, 100% 50%, calc(100% - 10px) 100%, 10px 100%, 0% 50%);
+    /* Force emoji to use text rendering so it inherits color */
+    font-variant-emoji: text;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .btn-analyze:hover {
+    background-position: 100% 0;
+    box-shadow: 0 0 30px rgba(201,168,76,0.5);
+    transform: translateY(-1px);
+  }
+
+  .btn-analyze:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* Results */
+  #results { display: none; }
+
+  .result-header {
+    text-align: center;
+    padding: 20px;
+    border-bottom: 1px solid rgba(201,168,76,0.2);
+    margin-bottom: 25px;
+  }
+
+  .result-title {
+    font-family: 'Ma Shan Zheng', serif;
+    color: var(--gold);
+    margin-bottom: 5px;
+    line-height: 1.3;
+  }
+  .result-title-zodiac {
+    font-size: clamp(1.4rem, 5vw, 1.9rem);
+    display: block;
+  }
+  .result-title-dir {
+    font-size: clamp(1.1rem, 4vw, 1.5rem);
+    display: block;
+    color: var(--gold-light);
+    letter-spacing: 0.08em;
+  }
+
+  .result-meta {
+    font-size: 0.75rem;
+    color: var(--gold-dark);
+    letter-spacing: 0.2em;
+  }
+
+  /* Score gauge */
+  .score-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+  }
+
+  .score-card {
+    flex: 1;
+    min-width: 130px;
+    background: rgba(201,168,76,0.05);
+    border: 1px solid rgba(201,168,76,0.15);
+    padding: 15px 12px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .score-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--score-color, var(--gold));
+    opacity: 0.6;
+  }
+
+  .score-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dark);
+    margin-bottom: 8px;
+  }
+
+  .score-icon { font-size: 1.4rem; margin-bottom: 5px; display: block; }
+
+  .score-val {
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: 1.5rem;
+    color: var(--score-color, var(--gold));
+  }
+
+  .score-stars {
+    font-size: 0.7rem;
+    color: var(--score-color, var(--gold));
+    margin-top: 3px;
+    opacity: 0.8;
+  }
+
+  /* Detail sections */
+  .result-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  @media (max-width: 650px) {
+    .result-sections { grid-template-columns: 1fr; }
+  }
+
+  .result-section {
+    background: rgba(201,168,76,0.04);
+    border: 1px solid rgba(201,168,76,0.15);
+    padding: 18px;
+    position: relative;
+  }
+
+  .result-section.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .rs-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .rs-icon { font-size: 1rem; }
+
+  .rs-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(201,168,76,0.08);
+    gap: 10px;
+  }
+
+  .rs-item:last-child { border-bottom: none; }
+
+  .rs-key {
+    font-size: 0.72rem;
+    color: var(--gold-dark);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .rs-val {
+    font-size: 0.75rem;
+    color: var(--paper);
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  .rs-val.good { color: #7ec897; }
+  .rs-val.warn { color: #e8a030; }
+  .rs-val.bad { color: #e06060; }
+
+  /* 命宅相配區塊 */
+  .mingzhai-block {
+    border-radius: 3px;
+    padding: 16px 18px;
+    margin: 14px 0 6px;
+    border: 1px solid;
+    animation: fadeUp 0.4s ease;
+  }
+  .mz-good { background: rgba(45,106,79,0.15); border-color: rgba(82,183,136,0.4); }
+  .mz-bad  { background: rgba(139,26,26,0.18); border-color: rgba(192,57,43,0.4); }
+
+  .mz-title {
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    letter-spacing: 0.1em;
+  }
+  .mz-good .mz-title { color: #7ec897; }
+  .mz-bad  .mz-title { color: #e06060; }
+
+  .mz-body {
+    font-size: 0.78rem;
+    line-height: 1.8;
+    color: var(--paper-dark);
+    margin-bottom: 10px;
+  }
+  .mz-body strong { color: #fff8d0; }
+
+  .mz-tags {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+  .mz-tag {
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 3px 10px;
+    font-size: 0.72rem;
+    color: var(--gold-light);
+    border-radius: 2px;
+  }
+  .mz-tag.bad  { background: rgba(192,57,43,0.12); border-color: rgba(192,57,43,0.3); color: #f09080; }
+  .mz-tag.good { background: rgba(45,106,79,0.15); border-color: rgba(82,183,136,0.3); color: #7ec897; }
+  .mz-arrow { color: var(--gold-dark); font-size: 0.8rem; }
+  .mz-result { font-size: 0.75rem; font-weight: 600; margin-left: 4px; }
+  .mz-result.good { color: #7ec897; }
+  .mz-result.bad  { color: #e06060; }
+
+  /* Score explanation banner */
+  .score-explain {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 16px;
+    border-radius: 3px;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    margin: 12px 0 4px;
+    border-left: 3px solid;
+    animation: fadeUp 0.4s ease;
+  }
+  .score-explain-bad  { background: rgba(180,40,30,0.15); border-color: #e06060; color: #f0a090; }
+  .score-explain-good { background: rgba(45,106,79,0.15); border-color: #52b788; color: #90d4a8; }
+  .score-explain-warn { background: rgba(180,130,20,0.15); border-color: #e8a030; color: #f0c060; }
+  .se-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* Floor chart — horizontal grid layout */
+  .floor-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
+
+  .floor-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.68rem;
+  }
+
+  .floor-num {
+    color: var(--gold-dark);
+    font-size: 0.65rem;
+    font-weight: 600;
+  }
+
+  .floor-bar-wrap {
+    width: 100%;
+    height: 50px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 2px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .floor-bar {
+    width: 100%;
+    height: 0%;
+    border-radius: 2px 2px 0 0;
+    transition: height 0.8s ease;
+  }
+
+  .floor-label {
+    font-size: 0.62rem;
+    text-align: center;
+  }
+
+  /* Pulse animation for auto-selected zodiac */
+  @keyframes zodiacPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(201,168,76,0.7); }
+    50%  { box-shadow: 0 0 0 8px rgba(201,168,76,0); }
+    100% { box-shadow: 0 0 0 0 rgba(201,168,76,0); }
+  }
+  .zodiac-btn.pulse {
+    animation: zodiacPulse 0.6s ease 2;
+  }
+
+  /* Needle idle wobble on load */
+  @keyframes needleWobble {
+    0%   { transform: rotate(-12deg); }
+    30%  { transform: rotate(12deg); }
+    55%  { transform: rotate(-6deg); }
+    75%  { transform: rotate(6deg); }
+    90%  { transform: rotate(-2deg); }
+    100% { transform: rotate(0deg); }
+  }
+  .needle-idle {
+    animation: needleWobble 1.4s cubic-bezier(0.25,0.46,0.45,0.94) forwards;
+  }
+  /* Tip box */
+  .tip-box {
+    background: rgba(139,26,26,0.1);
+    border: 1px solid rgba(139,26,26,0.3);
+    border-left: 3px solid var(--red-bright);
+    padding: 12px 15px;
+    margin-top: 10px;
+    font-size: 0.75rem;
+    line-height: 1.8;
+    color: var(--paper-dark);
+  }
+
+  .tip-box.good-tip {
+    background: rgba(45,106,79,0.1);
+    border-color: rgba(82,183,136,0.3);
+    border-left-color: var(--jade-light);
+  }
+
+  /* Five elements */
+  .five-elements {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+  }
+
+  .elem-badge {
+    padding: 5px 12px;
+    border-radius: 1px;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    border: 1px solid;
+  }
+
+  .elem-木 { background: rgba(82,183,136,0.1); border-color: rgba(82,183,136,0.4); color: #7ec897; }
+  .elem-火 { background: rgba(192,57,43,0.1); border-color: rgba(192,57,43,0.4); color: #e07060; }
+  .elem-土 { background: rgba(201,168,76,0.1); border-color: rgba(201,168,76,0.4); color: var(--gold); }
+  .elem-金 { background: rgba(200,200,220,0.1); border-color: rgba(200,200,220,0.3); color: #c8c8dc; }
+  .elem-水 { background: rgba(30,58,95,0.2); border-color: rgba(100,150,200,0.4); color: #80b0e0; }
+
+  /* Divider */
+  .ornament-divider {
+    text-align: center;
+    margin: 20px 0;
+    color: var(--gold-dark);
+    font-size: 0.7rem;
+    letter-spacing: 0.5em;
+    opacity: 0.6;
+  }
+
+  /* Reset button */
+  .btn-reset {
+    display: block;
+    margin: 10px auto;
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 8px 25px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    color: var(--gold-dark);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-reset:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  /* Spinner */
+  .spinner {
+    display: inline-block;
+    width: 20px; height: 20px;
+    border: 2px solid rgba(201,168,76,0.2);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Fade in */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { animation: fadeUp 0.5s ease forwards; }
+
+  /* Gua number display */
+  .gua-display {
+    text-align: center;
+    padding: 15px;
+    border: 1px solid rgba(201,168,76,0.2);
+    background: rgba(201,168,76,0.04);
+    margin-top: 15px;
+  }
+
+  .gua-num {
+    font-family: 'Ma Shan Zheng', serif;
+    font-size: 3rem;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .gua-name {
+    font-size: 0.8rem;
+    color: var(--gold-dark);
+    letter-spacing: 0.2em;
+    margin-top: 5px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div class="header-deco">
+      <div class="header-line"></div>
+      <span class="bagua-deco">☯</span>
+      <div class="header-line"></div>
+    </div>
+    <h1>風水羅盤・吉宅鑑定</h1>
+    <p class="header-sub">依生肖命卦・坐向五行・分析宅運吉凶</p>
+  </div>
+
+  <div class="steps">
+    <div class="step active" id="step1">
+      <div class="step-num">一</div>
+      <span>選擇生肖</span>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step" id="step2">
+      <div class="step-num">二</div>
+      <span>坐向與性別</span>
+    </div>
+    <div class="step-arrow">→</div>
+    <div class="step" id="step3">
+      <div class="step-num">三</div>
+      <span>吉凶鑑定</span>
+    </div>
+  </div>
+
+  <!-- Input form -->
+  <div id="input-form">
+    <!-- Zodiac -->
+    <div class="panel">
+      <div class="panel-title">選擇生肖</div>
+      <div class="zodiac-grid" id="zodiac-grid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- Direction & gender -->
+    <div class="panel">
+      <div class="panel-title">坐向與出生資料</div>
+      <div class="input-row" style="margin-bottom:10px">
+        <div class="field-group">
+          <label class="field-label">出生年份</label>
+          <select class="field-input" id="birth-year" style="width:200px" onchange="onYearChange()">
+            <option value="">── 請選擇年份 ──</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">出生月份</label>
+          <select class="field-input" id="birth-month" style="width:110px" onchange="onMonthChange()">
+            <option value="">── 月份 ──</option>
+            <option value="1">1 月</option>
+            <option value="2">2 月（立春附近）</option>
+            <option value="3">3 月</option>
+            <option value="4">4 月</option>
+            <option value="5">5 月</option>
+            <option value="6">6 月</option>
+            <option value="7">7 月</option>
+            <option value="8">8 月</option>
+            <option value="9">9 月</option>
+            <option value="10">10 月</option>
+            <option value="11">11 月</option>
+            <option value="12">12 月</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">出生日期</label>
+          <select class="field-input" id="birth-day" style="width:88px" onchange="onMonthChange()">
+            <option value="">── 日 ──</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">性別</label>
+          <select class="field-input" id="gender">
+            <option value="male">男</option>
+            <option value="female">女</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 立春提示區 -->
+      <div class="lichun-notice" id="lichun-notice"></div>
+      <div class="compass-wrap">
+        <div class="compass" id="compass">
+          <div class="compass-ring"></div>
+          <div class="compass-ring"></div>
+          <!-- SVG needle layer -->
+          <svg class="compass-needle-svg" id="compass-needle-svg" viewBox="0 0 220 220">
+            <defs>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="4" result="blur"/>
+                <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+              <linearGradient id="needleGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ffe08a"/>
+                <stop offset="40%" stop-color="#c9a84c"/>
+                <stop offset="100%" stop-color="#5a3a00"/>
+              </linearGradient>
+            </defs>
+            <!-- All needle shapes are centered at 0,0; outer g translates to compass centre -->
+            <g transform="translate(110,110)">
+              <!-- Glow layer (behind) -->
+              <g id="needle-glow-group" style="opacity:0;transform:rotate(0deg)">
+                <path d="M0,-85 L-10,-60 L-18,-72 L-12,-45 L12,-45 L18,-72 L10,-60 Z" fill="#ffe08a" opacity="0.35" filter="url(#glow)"/>
+                <rect x="-12" y="-45" width="24" height="8" rx="1" fill="#ffe08a" opacity="0.25" filter="url(#glow)"/>
+              </g>
+              <!-- Crown needle: points UP, rotates to selected direction -->
+              <g id="needle-group" style="opacity:0;transform:rotate(0deg)">
+                <!-- Crown stem (handle/pole going down) -->
+                <rect x="-3" y="-37" width="6" height="42" rx="2" fill="url(#needleGrad)" opacity="0.85"/>
+                <!-- Crown base band -->
+                <rect x="-13" y="-48" width="26" height="9" rx="2" fill="url(#needleGrad)"/>
+                <!-- Crown left spike -->
+                <polygon points="-10,-48 -13,-78 -6,-62" fill="url(#needleGrad)"/>
+                <!-- Crown centre spike (tallest) -->
+                <polygon points="0,-48 -5,-88 5,-88" fill="#ffe08a"/>
+                <!-- Crown right spike -->
+                <polygon points="10,-48 13,-78 6,-62" fill="url(#needleGrad)"/>
+                <!-- Crown jewel: left -->
+                <circle cx="-9" cy="-52" r="3" fill="#ffe08a" opacity="0.9"/>
+                <!-- Crown jewel: centre -->
+                <circle cx="0" cy="-54" r="3.5" fill="#fff8d0"/>
+                <!-- Crown jewel: right -->
+                <circle cx="9" cy="-52" r="3" fill="#ffe08a" opacity="0.9"/>
+                <!-- Tail: short base going down -->
+                <polygon points="0,8 -5,-4 5,-4" fill="rgba(201,168,76,0.35)"/>
+              </g>
+            </g>
+          </svg>
+          <!-- Hub dot on top -->
+          <div class="compass-hub"></div>
+          <!-- direction buttons generated by JS -->
+        </div>
+        <div>
+          <div class="compass-legend">
+            住宅坐向即<span>「坐山」</span>方位<br>
+            面向馬路為<span>「向」</span><br>
+            坐山為向的<span>對面</span><br><br>
+            例：大門朝南 →<br>
+            坐山選「<span>北</span>」
+          </div>
+          <div style="margin-top:12px;font-size:0.72rem;color:var(--gold-dark)">
+            已選：<span id="dir-selected" style="color:var(--gold)">尚未選擇</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-analyze" id="btn-analyze" onclick="analyze()" disabled>
+      ☯ 開始鑑定
+    </button>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+    <div class="panel fade-in" id="result-content">
+      <!-- filled by JS -->
+    </div>
+    <button class="btn-reset" onclick="resetForm()">↩ 重新鑑定</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+
+const ZODIACS = [
+  { name:'鼠', icon:'🐭', element:'水', years:[1900,1912,1924,1936,1948,1960,1972,1984,1996,2008,2020], lucky_dir:['北','東南'], avoid_dir:['南'], nature:'陽水' },
+  { name:'牛', icon:'🐮', element:'土', years:[1901,1913,1925,1937,1949,1961,1973,1985,1997,2009,2021], lucky_dir:['東南','南'], avoid_dir:['西北'], nature:'陰土' },
+  { name:'虎', icon:'🐯', element:'木', years:[1902,1914,1926,1938,1950,1962,1974,1986,1998,2010,2022], lucky_dir:['南','東'], avoid_dir:['西南'], nature:'陽木' },
+  { name:'兔', icon:'🐰', element:'木', years:[1903,1915,1927,1939,1951,1963,1975,1987,1999,2011,2023], lucky_dir:['東','東南'], avoid_dir:['西'], nature:'陰木' },
+  { name:'龍', icon:'🐲', element:'土', years:[1904,1916,1928,1940,1952,1964,1976,1988,2000,2012,2024], lucky_dir:['北','西'], avoid_dir:['東南'], nature:'陽土' },
+  { name:'蛇', icon:'🐍', element:'火', years:[1905,1917,1929,1941,1953,1965,1977,1989,2001,2013,2025], lucky_dir:['東北','西'], avoid_dir:['東北(忌)'], nature:'陰火' },
+  { name:'馬', icon:'🐴', element:'火', years:[1906,1918,1930,1942,1954,1966,1978,1990,2002,2014,2026], lucky_dir:['南','東'], avoid_dir:['北'], nature:'陽火' },
+  { name:'羊', icon:'🐑', element:'土', years:[1907,1919,1931,1943,1955,1967,1979,1991,2003,2015,2027], lucky_dir:['東','南'], avoid_dir:['北','西北'], nature:'陰土' },
+  { name:'猴', icon:'🐵', element:'金', years:[1908,1920,1932,1944,1956,1968,1980,1992,2004,2016,2028], lucky_dir:['西北','西'], avoid_dir:['東北'], nature:'陽金' },
+  { name:'雞', icon:'🐔', element:'金', years:[1909,1921,1933,1945,1957,1969,1981,1993,2005,2017,2029], lucky_dir:['西','西南'], avoid_dir:['東'], nature:'陰金' },
+  { name:'狗', icon:'🐶', element:'土', years:[1910,1922,1934,1946,1958,1970,1982,1994,2006,2018,2030], lucky_dir:['東北','南'], avoid_dir:['東南'], nature:'陽土' },
+  { name:'豬', icon:'🐷', element:'水', years:[1911,1923,1935,1947,1959,1971,1983,1995,2007,2019,2031], lucky_dir:['東','東北'], avoid_dir:['東南(沖)'], nature:'陰水' },
+];
+
+const DIRECTIONS = ['北','東北','東','東南','南','西南','西','西北'];
+
+const OPPOSITE = {
+  '北':'南','南':'北','東':'西','西':'東',
+  '東北':'西南','西南':'東北','東南':'西北','西北':'東南'
+};
+
+function getDirLabel(dir) {
+  return `坐${dir}朝${OPPOSITE[dir]}`;
+}
+
+// 坐向對應五行與卦
+const DIR_DATA = {
+  '北':  { element:'水', gua:'坎', num:1, trigram:'☵', flying:'一白水星' },
+  '東北':{ element:'土', gua:'艮', num:8, trigram:'☶', flying:'八白土星' },
+  '東':  { element:'木', gua:'震', num:3, trigram:'☳', flying:'三碧木星' },
+  '東南':{ element:'木', gua:'巽', num:4, trigram:'☴', flying:'四綠木星' },
+  '南':  { element:'火', gua:'離', num:9, trigram:'☲', flying:'九紫火星' },
+  '西南':{ element:'土', gua:'坤', num:2, trigram:'☷', flying:'二黑土星' },
+  '西':  { element:'金', gua:'兌', num:7, trigram:'☱', flying:'七赤金星' },
+  '西北':{ element:'金', gua:'乾', num:6, trigram:'☰', flying:'六白金星' },
+};
+
+// 五行生剋
+const ELEMENTS = ['木','火','土','金','水'];
+function generates(a,b) { return (a==='木'&&b==='火')||(a==='火'&&b==='土')||(a==='土'&&b==='金')||(a==='金'&&b==='水')||(a==='水'&&b==='木'); }
+function controls(a,b) { return (a==='木'&&b==='土')||(a==='火'&&b==='金')||(a==='土'&&b==='水')||(a==='金'&&b==='木')||(a==='水'&&b==='火'); }
+
+function getRelation(a, b) {
+  if(a===b) return { label:'比和', score:75, cls:'warn' };
+  if(generates(a,b)) return { label:'生入（吉）', score:95, cls:'good' };
+  if(generates(b,a)) return { label:'洩出（平）', score:60, cls:'warn' };
+  if(controls(a,b)) return { label:'克入（凶）', score:30, cls:'bad' };
+  if(controls(b,a)) return { label:'被克（凶）', score:25, cls:'bad' };
+  return { label:'平', score:60, cls:'warn' };
+}
+
+// 命卦計算（東西四宅）含五黃入宮處理
+function getMingGua(year, gender) {
+  // 數字根：各位數相加直到個位
+  let sum = 0;
+  String(year).split('').forEach(d => sum += parseInt(d));
+  while(sum > 9) {
+    let s2 = 0;
+    String(sum).split('').forEach(d => s2 += parseInt(d));
+    sum = s2;
+  }
+
+  let guaNum;
+  if(gender === 'male') {
+    guaNum = year < 2000 ? (11 - sum) : (9 - sum);
+  } else {
+    guaNum = year < 2000 ? (sum + 4) : (sum + 6);
+  }
+  guaNum = guaNum % 9 === 0 ? 9 : guaNum % 9;
+
+  // 五黃入宮：男寄坤(2)，女寄艮(8)
+  if(guaNum === 5) guaNum = gender === 'male' ? 2 : 8;
+
+  return guaNum;
+}
+
+const GUA_DATA = {
+  1: { name:'坎卦', trigram:'☵', group:'東四命', lucky:['北','南','東','東南'], unlucky:['西南','西北','西','東北'], element:'水', desc:'聰慧靈動，適合面水或背山坐北朝南之宅' },
+  2: { name:'坤卦', trigram:'☷', group:'西四命', lucky:['西南','西北','西','東北'], unlucky:['北','南','東','東南'], element:'土', desc:'敦厚穩重，適合坐西南面東北之宅' },
+  3: { name:'震卦', trigram:'☳', group:'東四命', lucky:['東','北','南','東南'], unlucky:['西南','西北','西','東北'], element:'木', desc:'積極進取，適合坐東面西之宅，木氣旺盛' },
+  4: { name:'巽卦', trigram:'☴', group:'東四命', lucky:['東南','北','南','東'], unlucky:['西南','西北','西','東北'], element:'木', desc:'文秀靈巧，適合坐東南面西北之宅' },
+  6: { name:'乾卦', trigram:'☰', group:'西四命', lucky:['西北','西南','西','東北'], unlucky:['北','南','東','東南'], element:'金', desc:'剛健自強，適合坐西北面東南，乾金之宅' },
+  7: { name:'兌卦', trigram:'☱', group:'西四命', lucky:['西','西南','西北','東北'], unlucky:['北','南','東','東南'], element:'金', desc:'悅目怡情，適合坐西面東之宅，金氣充盈' },
+  8: { name:'艮卦', trigram:'☶', group:'西四命', lucky:['東北','西南','西北','西'], unlucky:['北','南','東','東南'], element:'土', desc:'穩健踏實，適合坐東北面西南，艮土之宅' },
+  9: { name:'離卦', trigram:'☲', group:'東四命', lucky:['南','東','北','東南'], unlucky:['西南','西北','西','東北'], element:'火', desc:'光明熱情，適合坐南面北之宅，離火燦爛' },
+};
+
+// 樓層吉凶（依命卦數字與五行）
+function getFloorScore(floor, guaNum, zodiacElement) {
+  // 九星流年：1-9循環
+  const star = ((floor - 1) % 9) + 1;
+  const starElem = {1:'水',2:'土',3:'木',4:'木',5:'土',6:'金',7:'金',8:'土',9:'火'}[star];
+  const guaElem = GUA_DATA[guaNum]?.element || '土';
+  let score = 50;
+  if(generates(starElem, guaElem)) score = 90;
+  else if(generates(guaElem, starElem)) score = 65;
+  else if(controls(starElem, guaElem)) score = 25;
+  else if(controls(guaElem, starElem)) score = 40;
+  else score = 70;
+  // zodiac element bonus
+  if(generates(zodiacElement, starElem)) score = Math.min(100, score+10);
+  if(controls(starElem, zodiacElement)) score = Math.max(10, score-15);
+  return { star, starElem, score };
+}
+
+// 廚房、臥室、辦公等位置建議
+function getRoomAdvice(zodiac, guaData, dirData) {
+  const zElem = zodiac.element;
+  const gElem = guaData.element;
+
+  // 廚房（火）
+  const kitchenDirs = [];
+  DIRECTIONS.forEach(d => {
+    const de = DIR_DATA[d].element;
+    if(de==='火') kitchenDirs.push({ dir:d, note:'廚房五行相符' });
+    else if(generates(de,'火')) kitchenDirs.push({ dir:d, note:'生火旺灶' });
+  });
+
+  // 臥室（需靜氣）
+  const bedroomDirs = guaData.lucky.slice(0,3);
+
+  // 辦公室（需旺氣）
+  const officeDirs = guaData.lucky.slice(0,2);
+
+  return { kitchen: kitchenDirs.map(k=>k.dir).slice(0,3), bedroom: bedroomDirs, office: officeDirs };
+}
+
+// ═══════════════════════════════════════════
+// UI STATE
+// ═══════════════════════════════════════════
+
+let selectedZodiac = null;
+let selectedDir = null;
+
+function initZodiacGrid() {
+  const grid = document.getElementById('zodiac-grid');
+  grid.innerHTML = '';
+  ZODIACS.forEach((z,i) => {
+    const btn = document.createElement('button');
+    btn.className = 'zodiac-btn';
+    btn.dataset.idx = i;
+    btn.innerHTML = `<span class="zodiac-icon">${z.icon}</span><span class="zodiac-name">${z.name}</span><span class="zodiac-year">${z.element}</span>`;
+    btn.onclick = () => selectZodiac(i, btn);
+    grid.appendChild(btn);
+  });
+}
+
+function selectZodiac(i, btn) {
+  document.querySelectorAll('.zodiac-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedZodiac = ZODIACS[i];
+  checkReady();
+}
+
+function initCompass() {
+  const compass = document.getElementById('compass');
+  const cx = 110, cy = 110, r = 90;
+  DIRECTIONS.forEach(dir => {
+    const btn = document.createElement('button');
+    btn.className = 'dir-btn';
+    btn.dataset.dir = dir;
+    btn.innerHTML = `${dir}<span class="dir-sub-label">${DIR_DATA[dir].gua}</span>`;
+    btn.onclick = () => selectDir(dir, btn);
+    compass.appendChild(btn);
+  });
+}
+
+// Direction angle — needle points UP (North=0°), rotate clockwise
+const DIR_ANGLES = {
+  '北':0, '東北':45, '東':90, '東南':135,
+  '南':180, '西南':225, '西':270, '西北':315
+};
+
+let currentAngle = 0;
+let needleVisible = false;
+
+function shortestRotation(from, to) {
+  let diff = ((to - from) % 360 + 360) % 360;
+  if (diff > 180) diff -= 360;
+  return from + diff;
+}
+
+function animateNeedle(dir) {
+  const targetAngle = DIR_ANGLES[dir];
+  const ng  = document.getElementById('needle-group');
+  const ngg = document.getElementById('needle-glow-group');
+
+  const newAngle = needleVisible ? shortestRotation(currentAngle, targetAngle) : targetAngle;
+  currentAngle = newAngle;
+
+  ng.style.opacity  = '1';
+  ngg.style.opacity = '1';
+  needleVisible = true;
+
+  ng.style.transform  = `rotate(${newAngle}deg)`;
+  ngg.style.transform = `rotate(${newAngle}deg)`;
+}
+
+function selectDir(dir, btn) {
+  document.querySelectorAll('.dir-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedDir = dir;
+  document.getElementById('dir-selected').innerHTML = `<strong>${getDirLabel(dir)}</strong>　<span style="color:var(--gold-dark);font-size:0.68rem">${DIR_DATA[dir].gua}宮・${DIR_DATA[dir].flying}</span>`;
+  animateNeedle(dir);
+  checkReady();
+}
+
+function checkReady() {
+  const year = parseInt(document.getElementById('birth-year').value);
+  document.getElementById('btn-analyze').disabled = !(selectedZodiac && selectedDir && year > 1900 && year < 2100);
+}
+
+document.getElementById('birth-year').addEventListener('change', checkReady);
+
+function getZodiacForYear(year) {
+  return ZODIACS.find(z => z.years.includes(year)) || null;
+}
+
+function initYearDropdown() {
+  const sel = document.getElementById('birth-year');
+  sel.innerHTML = '<option value="">── 請選擇年份 ──</option>';
+  for(let y = 2010; y >= 1924; y--) {
+    const z = getZodiacForYear(y);
+    const label = z ? `${y}年（${z.icon} ${z.name}・${z.element}）` : `${y}年`;
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = label;
+    sel.appendChild(opt);
+  }
+}
+
+// ═══════════════════════════════════════════
+// 立春日期資料（每年約 2/4 或 2/5）
+// ═══════════════════════════════════════════
+// 格式：year → 立春日（農曆新年前後，公曆 2 月幾號）
+const LICHUN_DAY = {
+  1924:5,1925:4,1926:4,1927:5,1928:5,1929:4,1930:4,1931:5,1932:5,1933:4,
+  1934:4,1935:5,1936:5,1937:4,1938:4,1939:5,1940:5,1941:4,1942:4,1943:5,
+  1944:5,1945:4,1946:4,1947:5,1948:5,1949:4,1950:4,1951:5,1952:5,1953:4,
+  1954:4,1955:5,1956:5,1957:4,1958:4,1959:5,1960:5,1961:4,1962:4,1963:5,
+  1964:5,1965:4,1966:4,1967:5,1968:5,1969:4,1970:4,1971:5,1972:5,1973:4,
+  1974:4,1975:4,1976:5,1977:4,1978:4,1979:4,1980:5,1981:4,1982:4,1983:4,
+  1984:5,1985:4,1986:4,1987:4,1988:4,1989:4,1990:4,1991:4,1992:4,1993:4,
+  1994:4,1995:4,1996:4,1997:4,1998:4,1999:4,2000:4,2001:4,2002:4,2003:4,
+  2004:4,2005:4,2006:4,2007:4,2008:4,2009:4,2010:4,
+};
+function getLichunDay(year) { return LICHUN_DAY[year] || 4; }
+
+function populateDays(year, month) {
+  const sel = document.getElementById('birth-day');
+  const prevVal = sel.value;
+  sel.innerHTML = '<option value="">── 日 ──</option>';
+  if (!month) return;
+  const daysInMonth = new Date(year || 2000, month, 0).getDate();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const opt = document.createElement('option');
+    opt.value = d;
+    opt.textContent = `${d} 日`;
+    sel.appendChild(opt);
+  }
+  if (prevVal && parseInt(prevVal) <= daysInMonth) sel.value = prevVal;
+}
+
+function checkLichun() {
+  const year   = parseInt(document.getElementById('birth-year').value);
+  const month  = parseInt(document.getElementById('birth-month').value);
+  const day    = parseInt(document.getElementById('birth-day').value);
+  const notice = document.getElementById('lichun-notice');
+  if (!year || !month) { notice.style.display = 'none'; return; }
+
+  const lichunDay = getLichunDay(year);
+  const finalYear = getFinalYear(year, month, day || null);
+  const corrected = finalYear !== year;
+
+  if (month === 1) {
+    notice.className = 'lichun-notice warn-prev';
+    notice.style.display = 'block';
+    notice.innerHTML = `<span class="lichun-icon">⚠️</span><strong>1 月出生注意：</strong>
+      ${year} 年立春為 <strong>2 月 ${lichunDay} 日</strong>，您的生日在立春前，
+      命卦自動以 <strong>${finalYear} 年</strong> 計算。`;
+  } else if (month === 2) {
+    if (day) {
+      // 有填日期：自動判斷
+      if (corrected) {
+        notice.className = 'lichun-notice warn-prev';
+        notice.style.display = 'block';
+        notice.innerHTML = `<span class="lichun-icon">⚠️</span><strong>立春前出生：</strong>
+          ${year} 年立春為 2 月 ${lichunDay} 日，您生於 2/${day}，在立春前，
+          命卦自動以 <strong>${finalYear} 年</strong> 計算。`;
+      } else {
+        notice.className = 'lichun-notice';
+        notice.style.display = 'block';
+        notice.innerHTML = `<span class="lichun-icon">✅</span>
+          您生於 ${year}/2/${day}，已過立春（2 月 ${lichunDay} 日），命卦以 <strong>${year} 年</strong> 計算。`;
+        setTimeout(() => { notice.style.display = 'none'; }, 3000);
+      }
+    } else {
+      // 未填日期：提示選日期
+      notice.className = 'lichun-notice';
+      notice.style.display = 'block';
+      notice.innerHTML = `<span class="lichun-icon">🌱</span><strong>2 月出生請選日期：</strong>
+        ${year} 年立春為 <strong>2 月 ${lichunDay} 日</strong>。
+        請選擇出生日期，系統將自動判斷命卦年份。`;
+    }
+  } else {
+    notice.className = 'lichun-notice';
+    notice.style.display = 'block';
+    notice.innerHTML = `<span class="lichun-icon">✅</span>
+      ${month} 月出生，已過立春，命卦以 <strong>${year} 年</strong> 計算。`;
+    setTimeout(() => { notice.style.display = 'none'; }, 2500);
+  }
+}
+
+function onMonthChange() {
+  const year  = parseInt(document.getElementById('birth-year').value);
+  const month = parseInt(document.getElementById('birth-month').value);
+  populateDays(year, month);
+  checkLichun();
+}
+
+function onYearChange() {
+  const year  = parseInt(document.getElementById('birth-year').value);
+  const month = parseInt(document.getElementById('birth-month').value);
+  if(!year) return;
+  const z = getZodiacForYear(year);
+  if(z) {
+    const idx = ZODIACS.indexOf(z);
+    const btn = document.querySelector(`.zodiac-btn[data-idx="${idx}"]`);
+    if(btn) {
+      selectZodiac(idx, btn);
+      btn.classList.remove('pulse');
+      void btn.offsetWidth;
+      btn.classList.add('pulse');
+      setTimeout(() => btn.classList.remove('pulse'), 1300);
+    }
+  }
+  if(month) populateDays(year, month);
+  checkLichun();
+  checkReady();
+}
+
+// ═══════════════════════════════════════════
+// ANALYSIS
+// ═══════════════════════════════════════════
+
+// ═══════════════════════════════════════════
+// CONFIG_MESSAGES — 文案集中管理
+// ═══════════════════════════════════════════
+const CONFIG_MESSAGES = {
+  homeAdvice: {
+    good: (dir, guaName) => `此坐向「坐${dir}」與您的${guaName}完全相符，宅運旺盛，財官兩利，居住者精神飽滿、事業順遂。`,
+    bad:  (dir, guaName) => `此坐向「坐${dir}」與您的${guaName}命不配宅，屬凶位，易有健康破財之虞，建議透過佈局化解或考慮重新選屋。`,
+    warn: (dir, guaName) => `此坐向「坐${dir}」與您的${guaName}相差不大，屬中平格局，可透過室內佈局加強吉氣。`,
+  },
+  officeAdvice: (dirs) => `辦公桌或工作位宜面向 ${dirs}，可強化事業能量，招財引貴人，切忌背門而坐。`,
+  kitchenAdvice: {
+    water: () => `水命生肖需特別注意廚房水火相沖問題，可在廚房放置土色器物調和。`,
+    other: () => `爐灶宜靠牆，切忌孤懸，背後需有實牆靠山。`,
+  },
+  bedroomAdvice: (luckyDir, zodiacName, zodiacElem, color) =>
+    `床頭宜靠實牆朝${luckyDir}，可補${zodiacName}年${zodiacElem}行之氣。臥室宜溫馨簡潔，顏色以${color}為宜，助眠安神。`,
+  floorAdvice: (zodiacName, zElem, group, topElem) =>
+    `樓層依九星飛泊推算，結合命卦五行與生肖屬性綜合評分。${zodiacName}年${zElem}命，以${topElem}樓層最為有利。偶數樓層屬陰、奇數屬陽，${group==='東四命'?'東四命宜選奇數樓層':'西四命宜選偶數樓層'}，與命卦共鳴。`,
+};
+
+// ═══════════════════════════════════════════
+// 計算邏輯（純計算，不碰 DOM）
+// ═══════════════════════════════════════════
+function calculateFengShui(year, gender, zodiac, dir) {
+  const dirData = DIR_DATA[dir];
+  const guaNum  = getMingGua(year, gender);
+  const guaData = GUA_DATA[guaNum] || GUA_DATA[1];
+  const zElem   = zodiac.element;
+  const dElem   = dirData.element;
+
+  const relZodiacDir = getRelation(zElem, dElem);
+  const relGuaDir = guaData.lucky.includes(dir)
+    ? { label:'命配宅（吉）', score:95, cls:'good' }
+    : guaData.unlucky.includes(dir)
+    ? { label:'命不配宅（凶）', score:20, cls:'bad' }
+    : { label:'次吉', score:65, cls:'warn' };
+  const overallScore = Math.round(relZodiacDir.score * 0.4 + relGuaDir.score * 0.6);
+
+  const floors = [];
+  for(let f = 1; f <= 15; f++) floors.push({ f, ...getFloorScore(f, guaNum, zElem) });
+  const floorsSorted = [...floors].sort((a,b) => b.score - a.score);
+  const topFloors = floorsSorted.slice(0,5).map(f=>f.f).sort((a,b)=>a-b);
+  const badFloors = floorsSorted.slice(-3).map(f=>f.f).sort((a,b)=>a-b);
+
+  const rooms = getRoomAdvice(zodiac, guaData, dirData);
+
+  return { zodiac, dir, dirData, guaNum, guaData, zElem, dElem, year, gender,
+           relZodiacDir, relGuaDir, overallScore, floors, topFloors, badFloors, rooms };
+}
+
+// ═══════════════════════════════════════════
+// 自動立春年份修正
+// ═══════════════════════════════════════════
+function getFinalYear(year, month, day) {
+  if (!year || !month) return year;
+  const lichun = getLichunDay(year);
+  // 1月，或2月且日期在立春前 → 用前一年
+  if (month < 2 || (month === 2 && day && day < lichun)) {
+    return year - 1;
+  }
+  return year;
+}
+
+// ═══════════════════════════════════════════
+// 渲染（純 DOM 操作）
+// ═══════════════════════════════════════════
+function renderResults(d) {
+  document.getElementById('result-content').innerHTML = buildResultHTML(d);
+  document.getElementById('input-form').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+
+  // 樓層階梯式升起動畫
+  const bars = document.querySelectorAll('.floor-bar');
+  bars.forEach((bar, index) => {
+    setTimeout(() => {
+      bar.style.height = bar.dataset.h + '%';
+    }, 80 + index * 55);
+  });
+}
+
+function analyze() {
+  const rawYear = parseInt(document.getElementById('birth-year').value);
+  const month   = parseInt(document.getElementById('birth-month').value) || 6;
+  const day     = parseInt(document.getElementById('birth-day').value)   || 15;
+  const gender  = document.getElementById('gender').value;
+
+  // 自動修正立春前後年份
+  const finalYear = getFinalYear(rawYear, month, day);
+
+  const data = calculateFengShui(finalYear, gender, selectedZodiac, selectedDir);
+
+  // 若年份被自動修正，在結果裡標示
+  data.correctedYear = (finalYear !== rawYear) ? rawYear : null;
+  data.finalYear = finalYear;
+
+  renderResults(data);
+}
+
+function buildResultHTML(d) {
+  // 命宅相配判斷（東四命配東四宅，西四命配西四宅）
+  const EAST_FOUR = ['北','東','東南','南'];
+  const WEST_FOUR = ['西南','西北','西','東北'];
+  const isEastCmd  = d.guaData.group === '東四命';
+  const isEastZhai = EAST_FOUR.includes(d.dir);
+  const mingZhaiMatch = isEastCmd === isEastZhai; // 命宅是否相配
+
+  const relGuaDir = guaData => guaData.lucky.includes(d.dir)
+    ? { label:'命配宅（吉）', score:95, cls:'good' }
+    : guaData.unlucky.includes(d.dir)
+    ? { label:'命不配宅（凶）', score:20, cls:'bad' }
+    : { label:'次吉', score:65, cls:'warn' };
+
+  // ── 六級評等系統 ──────────────────────────────
+  // 同時考量：① 命宅相配 ② 生肖五行關係 ③ 加權分數
+  function getRating(score, mingMatch, guaRelCls, zodiacRelCls) {
+    if (!mingMatch) {
+      // 命宅不配：凶中分輕重
+      return zodiacRelCls === 'good'
+        ? { label:'命不配宅', stars:'★★☆☆☆', color:'#e06060', tier:2 }
+        : { label:'命不配宅', stars:'★☆☆☆☆', color:'#c03030', tier:1 };
+    }
+    // 命宅相配：依分數細分四等
+    if (score >= 88) return { label:'大吉・命宅雙旺', stars:'★★★★★', color:'#7ec897', tier:6 };
+    if (score >= 75) return { label:'吉・命配宅旺',   stars:'★★★★☆', color:'#7ec897', tier:5 };
+    if (score >= 62) return { label:'中吉・尚佳',     stars:'★★★★☆', color:'#a8d4b8', tier:4 };
+    return             { label:'平・宜調整佈局',   stars:'★★★☆☆', color:'#e8a030', tier:3 };
+  }
+
+  const rating = getRating(d.overallScore, mingZhaiMatch, d.relGuaDir.cls, d.relZodiacDir.cls);
+  const scoreColor = rating.color;
+  const scoreLabel = rating.label;
+  const stars      = rating.stars;
+  const genderTxt = d.gender==='male' ? '男命' : '女命';
+
+  // 命宅相配說明文字
+  const mingZhaiGroup = isEastCmd ? '東四命' : '西四命';
+  const zhaiGroup     = isEastZhai ? '東四宅' : '西四宅';
+  const mingZhaiHtml = `
+    <div class="mingzhai-block ${mingZhaiMatch ? 'mz-good' : 'mz-bad'}">
+      <div class="mz-title">${mingZhaiMatch ? '✅ 命宅相配' : '❌ 命宅不配'}</div>
+      <div class="mz-body">
+        您的命卦為 <strong>${d.guaData.name}（${mingZhaiGroup}）</strong>，
+        坐向屬 <strong>${d.dirData.gua}宅（${zhaiGroup}）</strong>。
+        ${mingZhaiMatch
+          ? `${mingZhaiGroup}住${zhaiGroup}，命宅相配，為八宅風水首要吉格，宅氣與人命共鳴，財旺丁旺。`
+          : `${mingZhaiGroup}不宜住${zhaiGroup}，命宅相剋，為八宅風水最忌之格，宅氣與人命相沖。建議改選<strong>${isEastCmd ? '坐北、坐東、坐東南或坐南' : '坐西南、坐西北、坐西或坐東北'}</strong>之宅。`
+        }
+      </div>
+      <div class="mz-tags">
+        <span class="mz-tag">${d.guaData.name}</span>
+        <span class="mz-arrow">→</span>
+        <span class="mz-tag ${mingZhaiMatch ? 'good' : 'bad'}">${d.dirData.gua}宅</span>
+        <span class="mz-result ${mingZhaiMatch ? 'good' : 'bad'}">${mingZhaiMatch ? '相配 ✓' : '不配 ✗'}</span>
+      </div>
+    </div>`;
+
+  // 從 CONFIG_MESSAGES 取文案
+  const homeAdvice = CONFIG_MESSAGES.homeAdvice[d.relGuaDir.cls]
+    ? CONFIG_MESSAGES.homeAdvice[d.relGuaDir.cls](d.dir, d.guaData.name)
+    : CONFIG_MESSAGES.homeAdvice.warn(d.dir, d.guaData.name);
+
+  const kitchenAdvice = d.rooms.kitchen.join('、');
+  const bedroomAdvice = d.rooms.bedroom.join('、');
+  const officeAdvice  = d.rooms.office.join('、');
+
+  // 樓層橫向網格（垂直 bar 由下往上）
+  // 顏色以 topFloors/badFloors 集合為準，與標題列完全對齊
+  const topSet = new Set(d.topFloors);
+  const badSet = new Set(d.badFloors);
+  const allFloors = [];
+  for(let f=1; f<=15; f++) allFloors.push(d.floors.find(x => x.f===f));
+
+  const floorBarsHtml = allFloors.map(fl => {
+    const isTop = topSet.has(fl.f);
+    const isBad = badSet.has(fl.f);
+    const color = isTop ? '#7ec897' : isBad ? '#e06060' : '#e8a030';
+    const label = isTop ? '適合' : isBad ? '不適合' : '普通';
+    const pct   = Math.round(fl.score);
+    return `<div class="floor-item">
+      <div class="floor-num">${fl.f}F</div>
+      <div class="floor-bar-wrap">
+        <div class="floor-bar" data-h="${pct}" style="height:0%;background:${color}"></div>
+      </div>
+      <div class="floor-label" style="color:${color}">${label}</div>
+    </div>`;
+  }).join('');
+
+  return `
+    <div class="result-header">
+      <div class="result-title">
+        <span class="result-title-zodiac">${d.zodiac.icon} ${d.zodiac.name}年</span>
+        <span class="result-title-dir">${getDirLabel(d.dir)}</span>
+      </div>
+      <div class="result-meta">${d.year}年 ${genderTxt}・${d.guaData.name}（${d.guaData.group}）・命卦屬${d.guaData.element}${d.correctedYear ? `<br><span style="color:#e8a030;font-size:0.7rem">⚠️ 生於 ${d.correctedYear} 年立春前，命卦自動以 ${d.year} 年計算</span>` : ''}</div>
+    </div>
+
+    <div class="score-row">
+      <div class="score-card" style="--score-color:${scoreColor}">
+        <div class="score-label">總體宅運</div>
+        <span class="score-icon">🏠</span>
+        <div class="score-val">${scoreLabel}</div>
+        <div class="score-stars">${stars}</div>
+      </div>
+      <div class="score-card" style="--score-color:${d.relZodiacDir.cls==='good'?'#7ec897':d.relZodiacDir.cls==='bad'?'#e06060':'#e8a030'}">
+        <div class="score-label">生肖五行 <span style="font-size:0.55rem;opacity:0.7">（佔40%）</span></div>
+        <span class="score-icon">${d.zodiac.icon}</span>
+        <div class="score-val" style="font-size:1rem">${d.relZodiacDir.label}</div>
+        <div class="score-stars">${d.zElem}→${d.dElem}</div>
+      </div>
+      <div class="score-card" style="--score-color:${d.relGuaDir.cls==='good'?'#7ec897':d.relGuaDir.cls==='bad'?'#e06060':'#e8a030'}">
+        <div class="score-label">命卦坐向 <span style="font-size:0.55rem;opacity:0.7">（佔60%）</span></div>
+        <span class="score-icon">${d.guaData.trigram}</span>
+        <div class="score-val" style="font-size:1rem">${d.relGuaDir.label}</div>
+        <div class="score-stars">${d.guaData.name}</div>
+      </div>
+      <div class="score-card" style="--score-color:var(--gold)">
+        <div class="score-label">命卦資訊</div>
+        <span class="score-icon">${d.guaData.trigram}</span>
+        <div class="score-val" style="font-size:1.1rem">${d.guaData.name}</div>
+        <div class="score-stars">${d.guaData.group}</div>
+      </div>
+    </div>
+
+    ${mingZhaiHtml}
+
+    ${(()=>{
+      const domKey = !mingZhaiMatch
+        ? { icon:'❌', cls:'bad',
+            text:`您屬<strong>${mingZhaiGroup}</strong>，所選坐向（${d.dirData.gua}宅）為<strong>${zhaiGroup}</strong>，命宅不配，是八宅風水最忌格局。即使生肖五行「${d.relZodiacDir.label}」，仍難以化解命宅相剋之氣。建議改選${d.guaData.lucky.slice(0,2).map(x=>'坐'+x).join('或')}。` }
+        : d.relGuaDir.cls === 'good'
+        ? { icon:'✨', cls:'good',
+            text:`命宅相配（${mingZhaiGroup}住${zhaiGroup}），加上生肖五行「${d.relZodiacDir.label}」，雙重加持，宅運旺盛。` }
+        : { icon:'ℹ️', cls:'warn',
+            text:`命宅屬次吉格局，生肖五行「${d.relZodiacDir.label}」，整體中平，可透過室內佈局強化吉氣。` };
+      return `<div class="score-explain score-explain-${domKey.cls}">
+        <span class="se-icon">${domKey.icon}</span>
+        <span>${domKey.text}</span>
+      </div>`;
+    })()}
+
+    <div class="five-elements">
+      ${[...new Set([d.zElem,d.dElem,d.guaData.element])].map(e=>`<span class="elem-badge elem-${e}">${e}行</span>`).join('')}
+    </div>
+
+    <div class="ornament-divider">◆ ◇ ◆</div>
+
+    <div class="result-sections">
+
+      <div class="result-section">
+        <div class="rs-title"><span class="rs-icon">🏠</span>住宅整體</div>
+        <div class="rs-item"><span class="rs-key">坐山朝向</span><span class="rs-val good">${getDirLabel(d.dir)}</span></div>
+        <div class="rs-item"><span class="rs-key">坐宮星曜</span><span class="rs-val">${d.dirData.flying}</span></div>
+        <div class="rs-item"><span class="rs-key">宅卦</span><span class="rs-val">${d.dirData.gua}卦 ${d.dirData.trigram}</span></div>
+        <div class="rs-item"><span class="rs-key">吉位方向</span><span class="rs-val good">${d.guaData.lucky.join('・')}</span></div>
+        <div class="rs-item"><span class="rs-key">凶位方向</span><span class="rs-val bad">${d.guaData.unlucky.join('・')}</span></div>
+        <div class="tip-box ${d.relGuaDir.cls==='good'?'good-tip':''}">${homeAdvice}</div>
+      </div>
+
+      <div class="result-section">
+        <div class="rs-title"><span class="rs-icon">🛋️</span>客廳與辦公</div>
+        <div class="rs-item"><span class="rs-key">文昌位</span><span class="rs-val good">${getWenChang(d.guaNum)}</span></div>
+        <div class="rs-item"><span class="rs-key">財位方向</span><span class="rs-val good">${getCaiWei(d.zodiac.name)}</span></div>
+        <div class="rs-item"><span class="rs-key">辦公桌朝向</span><span class="rs-val good">${officeAdvice}</span></div>
+        <div class="rs-item"><span class="rs-key">書房位置</span><span class="rs-val">${d.guaData.lucky[0]}方</span></div>
+        <div class="rs-item"><span class="rs-key">聚氣格局</span><span class="rs-val">${d.guaData.group}最宜坐${d.guaData.lucky[0]}</span></div>
+        <div class="tip-box good-tip">${CONFIG_MESSAGES.officeAdvice(officeAdvice)}</div>
+      </div>
+
+      <div class="result-section">
+        <div class="rs-title"><span class="rs-icon">🍳</span>廚房</div>
+        <div class="rs-item"><span class="rs-key">廚房宜設方位</span><span class="rs-val good">${kitchenAdvice}</span></div>
+        <div class="rs-item"><span class="rs-key">灶口朝向</span><span class="rs-val good">${d.guaData.lucky[0]}或${d.guaData.lucky[1]}</span></div>
+        <div class="rs-item"><span class="rs-key">廚房五行</span><span class="rs-val">火 🔥</span></div>
+        <div class="rs-item"><span class="rs-key">忌設方位</span><span class="rs-val bad">${d.zodiac.avoid_dir[0]||d.guaData.unlucky[0]}方</span></div>
+        <div class="rs-item"><span class="rs-key">化解方式</span><span class="rs-val">可放木質器物洩火或引火</span></div>
+        <div class="tip-box">廚房忌設於住宅正中央（火剋中宮），也忌設在水區（北方）。${d.zElem==='水' ? CONFIG_MESSAGES.kitchenAdvice.water() : CONFIG_MESSAGES.kitchenAdvice.other()}</div>
+      </div>
+
+      <div class="result-section">
+        <div class="rs-title"><span class="rs-icon">🛏️</span>臥室</div>
+        <div class="rs-item"><span class="rs-key">臥室宜設方位</span><span class="rs-val good">${bedroomAdvice}</span></div>
+        <div class="rs-item"><span class="rs-key">床頭朝向</span><span class="rs-val good">${d.guaData.lucky[0]}方（命卦首選）</span></div>
+        <div class="rs-item"><span class="rs-key">睡眠能量</span><span class="rs-val">${d.guaData.element}氣補命</span></div>
+        <div class="rs-item"><span class="rs-key">臥室忌對</span><span class="rs-val bad">廁所門、廚房門正對</span></div>
+        <div class="rs-item"><span class="rs-key">床位忌沖</span><span class="rs-val bad">橫樑壓床、鏡子照床</span></div>
+        <div class="tip-box good-tip">${CONFIG_MESSAGES.bedroomAdvice(d.guaData.lucky[0], d.zodiac.name, d.zodiac.element, getBedroomColor(d.zodiac.element))}</div>
+      </div>
+
+      <div class="result-section full-width">
+        <div class="rs-title"><span class="rs-icon">🏢</span>大樓適合樓層（1F–15F）</div>
+        <div style="margin-bottom:12px;font-size:0.72rem;color:var(--gold-dark)">
+          最佳樓層：<span style="color:#7ec897;font-size:0.82rem">${d.topFloors.join('F、')}F</span>　
+          &nbsp;不利樓層：<span style="color:#e06060;font-size:0.82rem">${d.badFloors.join('F、')}F</span>
+        </div>
+        <div class="floor-grid">${floorBarsHtml}</div>
+        <div class="tip-box good-tip" style="margin-top:12px">${CONFIG_MESSAGES.floorAdvice(d.zodiac.name, d.zElem, d.guaData.group, topElemFloor(d.zElem))}</div>
+      </div>
+
+    </div>
+
+    <div class="gua-display">
+      <div class="gua-num">${d.guaNum}</div>
+      <div class="gua-name">${d.guaData.name}・${d.guaData.group}・${d.guaData.element}行</div>
+      <div style="font-size:0.72rem;color:var(--gold-dark);margin-top:8px;line-height:1.8">${d.guaData.desc}</div>
+    </div>
+  `;
+}
+
+function getWenChang(guaNum) {
+  const map = {1:'東南',2:'東',3:'北',4:'南',6:'西南',7:'東北',8:'西北',9:'西'};
+  return map[guaNum] || '東南';
+}
+
+function getCaiWei(zodiacName) {
+  const map = {
+    '鼠':'東南、北', '牛':'東南', '虎':'南、東北', '兔':'東',
+    '龍':'東南、北', '蛇':'南', '馬':'東南', '羊':'南',
+    '猴':'東南', '雞':'西南', '狗':'東南', '豬':'東北'
+  };
+  return map[zodiacName] || '東南';
+}
+
+function getBedroomColor(elem) {
+  const map = { '木':'綠色、米白', '火':'暖黃、米色', '土':'米色、淡黃', '金':'白色、淡金', '水':'淡藍、米白' };
+  return map[elem] || '米白';
+}
+
+function topElemFloor(elem) {
+  const map = { '水':'1樓（坎）、6F（乾金生水）', '木':'3F（震）、4F（巽）', '火':'9F（離）', '土':'2F、5F、8F', '金':'6F、7F' };
+  return map[elem] || '命卦吉星層';
+}
+
+function resetForm() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('input-form').style.display = 'block';
+  document.querySelectorAll('.zodiac-btn').forEach(b=>b.classList.remove('selected'));
+  document.querySelectorAll('.dir-btn').forEach(b=>b.classList.remove('selected'));
+  selectedZodiac = null; selectedDir = null;
+  document.getElementById('dir-selected').textContent = '尚未選擇';
+  document.getElementById('btn-analyze').disabled = true;
+  needleVisible = false; currentAngle = 0;
+  const ng = document.getElementById('needle-group');
+  const ngg = document.getElementById('needle-glow-group');
+  if(ng) ng.style.opacity = '0';
+  if(ngg) ngg.style.opacity = '0';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+initZodiacGrid();
+initCompass();
+initYearDropdown();
+
+// 指針初始微抖，引導使用者點擊羅盤
+setTimeout(() => {
+  const ng  = document.getElementById('needle-group');
+  const ngg = document.getElementById('needle-glow-group');
+  if(ng && !needleVisible) {
+    ng.style.opacity  = '0.5';
+    ngg.style.opacity = '0.3';
+    ng.classList.add('needle-idle');
+    ngg.classList.add('needle-idle');
+    setTimeout(() => {
+      ng.style.opacity  = '0';
+      ngg.style.opacity = '0';
+      ng.classList.remove('needle-idle');
+      ngg.classList.remove('needle-idle');
+    }, 1500);
+  }
+}, 800);
+</script>
+
+
+
+
+
+<script>
+// Service Worker — 離線快取 (GitHub Pages)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    const h = location.hostname;
+    // 僅在真實部署環境啟用，跳過 Claude 預覽
+    if (h === 'localhost' || h.includes('claude.ai') || h.includes('anthropic')) return;
+    navigator.serviceWorker.register('./sw.js', { scope: './' })
+      .then(r  => console.log('[SW] registered', r.scope))
+      .catch(e => console.log('[SW] skipped:', e.message));
+  });
+}
+</script>
+</body>
+</html>
